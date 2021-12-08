@@ -44,6 +44,7 @@ function CustomDrawerContent({ drawerPosition, navigation, profile, focused, sta
             <Text color="#8898AA" style={{ marginTop: 16, marginLeft: 8 }}>DOCUMENTAÇÃO</Text>
           </Block>
           <DrawerCustomItem title="Começando no App" navigation={navigation} />
+          <DrawerCustomItem title="Sair" navigation={navigation} />
         </ScrollView>
       </Block>
     </Block>

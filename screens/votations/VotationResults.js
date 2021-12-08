@@ -21,7 +21,7 @@ class VotationResults extends React.Component {
                             caption={c.group}
                             imageStyle={styles.cardImageRadius}
                             imageBlockStyle={{ padding: theme.SIZES.BASE / 2 }}
-                            image={c.img}
+                            image={c.image}
                         />
                     </Block>
                 )

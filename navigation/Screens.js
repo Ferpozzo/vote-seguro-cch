@@ -24,7 +24,7 @@ import { Icon, Header } from "../components";
 import VotationDetail from "../screens/votations/VotationDetail";
 import Vote from "../screens/votations/Vote";
 import VotationResults from "../screens/votations/VotationResults";
-
+import { errorMessages, deviceLocale, registerLabels } from "../constants/validators";
 const { width } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
@@ -144,11 +144,12 @@ function HomeStack(props) {
       />
       <Stack.Screen
         name="Vote"
-        component={Vote}
         options={{
           headerTransparent: true
         }}
-      />
+      >
+        {(props) => <Vote {...props} messages={errorMessages} deviceLocale={deviceLocale} labels={registerLabels} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }
@@ -202,18 +203,19 @@ export default function OnboardingStack(props) {
       <Stack.Screen name="App" component={AppStack} />
       <Stack.Screen
         name="Login"
-        component={Login}
         option={{
           headerTransparent: true
         }}
-      />
+      >
+        {(props) => <Login {...props} messages={errorMessages} deviceLocale={deviceLocale} labels={registerLabels} />}
+      </Stack.Screen>
       <Stack.Screen
         name="Register"
-        component={Register}
         option={{
           headerTransparent: true
-        }}
-      />
+        }}>
+        {(props) => <Register {...props} messages={errorMessages} deviceLocale={deviceLocale} labels={registerLabels} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

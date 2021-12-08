@@ -21,14 +21,17 @@
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "5.14.3",
     "@use-expo/font": "^2.0.0",
+    "axios": "^0.24.0",
     "expo": "^42.0.0",
     "expo-app-loading": "^1.0.1",
     "expo-asset": "~8.3.2",
     "expo-font": "~9.2.1",
+    "expo-secure-store": "^11.0.3",
     "galio-framework": "^0.8.0",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native-form-validator": "^0.5.1",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-modal-dropdown": "git+https://github.com/siemiatj/react-native-modal-dropdown.git",
     "react-native-reanimated": "~2.2.0",
@@ -37,7 +40,10 @@
     "react-navigation": "^4.4.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "8.3.0"
+    "babel-preset-expo": "8.3.0",
+    "typescript": "~4.0.0",
+    "@types/react": "~16.9.35",
+    "@types/react-native": "~0.63.2"
   },
   "keywords": [
     "e-vote",

@@ -4,7 +4,8 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from "react-native";
 import { Block, Button, Text, theme } from "galio-framework";
 
@@ -12,16 +13,65 @@ const { height, width } = Dimensions.get("screen");
 
 import argonTheme from "../constants/Theme";
 import Images from "../constants/Images";
+import * as SecureStore from 'expo-secure-store';
 
 class Onboarding extends React.Component {
   render() {
     const { navigation } = this.props;
-
+    SecureStore.getItemAsync('token').then(token => {
+      if (token) {
+        navigation.navigate("App")
+      } else {
+        return (
+          <Block flex style={styles.container}>
+            <StatusBar hidden />
+            <Block flex center>
+              <ImageBackground
+                source={Images.Onboarding}
+                style={{ height, width, zIndex: 1 }}
+              />
+            </Block>
+            <Block center>
+              <Image source={Images.LogoOnboarding} style={styles.logo} />
+            </Block>
+            <Block flex space="between" style={styles.padded}>
+              <Block flex space="around" style={{ zIndex: 2 }}>
+                <Block style={styles.title}>
+                  <Block style={styles.subTitle}>
+                    <Text color="white" size={16}>
+                      A mesma segurança, muito mais praticidade
+                    </Text>
+                  </Block>
+                </Block>
+                <Block center>
+                  <Button
+                    style={styles.button}
+                    color={argonTheme.COLORS.SECONDARY}
+                    onPress={() => navigation.navigate("Login")}
+                    textStyle={{ color: argonTheme.COLORS.BLACK }}
+                  >
+                    Entrar
+                  </Button>
+                  <Button
+                    style={styles.button}
+                    color={argonTheme.COLORS.SECONDARY}
+                    onPress={() => navigation.navigate("Register")}
+                    textStyle={{ color: argonTheme.COLORS.BLACK }}
+                  >
+                    Cadastre-se
+                  </Button>
+                </Block>
+              </Block>
+            </Block>
+          </Block>
+        );
+      }
+    })
     return (
       <Block flex style={styles.container}>
         <StatusBar hidden />
         <Block flex center>
-        <ImageBackground
+          <ImageBackground
             source={Images.Onboarding}
             style={{ height, width, zIndex: 1 }}
           />
@@ -30,32 +80,32 @@ class Onboarding extends React.Component {
           <Image source={Images.LogoOnboarding} style={styles.logo} />
         </Block>
         <Block flex space="between" style={styles.padded}>
-            <Block flex space="around" style={{ zIndex: 2 }}>
-              <Block style={styles.title}>
-                <Block style={styles.subTitle}>
-                  <Text color="white" size={16}>
-                    A mesma segurança, muito mais praticidade
-                  </Text>
-                </Block>
+          <Block flex space="around" style={{ zIndex: 2 }}>
+            <Block style={styles.title}>
+              <Block style={styles.subTitle}>
+                <Text color="white" size={16}>
+                  A mesma segurança, muito mais praticidade
+                </Text>
               </Block>
-              <Block center>
-                <Button
-                  style={styles.button}
-                  color={argonTheme.COLORS.SECONDARY}
-                  onPress={() => navigation.navigate("Login")}
-                  textStyle={{ color: argonTheme.COLORS.BLACK }}
-                >
-                  Entrar
-                </Button>
-                <Button
-                  style={styles.button}
-                  color={argonTheme.COLORS.SECONDARY}
-                  onPress={() => navigation.navigate("Register")}
-                  textStyle={{ color: argonTheme.COLORS.BLACK }}
-                >
-                  Cadastre-se
-                </Button>
-              </Block>
+            </Block>
+            <Block center>
+              <Button
+                style={styles.button}
+                color={argonTheme.COLORS.SECONDARY}
+                onPress={() => navigation.navigate("Login")}
+                textStyle={{ color: argonTheme.COLORS.BLACK }}
+              >
+                Entrar
+              </Button>
+              <Button
+                style={styles.button}
+                color={argonTheme.COLORS.SECONDARY}
+                onPress={() => navigation.navigate("Register")}
+                textStyle={{ color: argonTheme.COLORS.BLACK }}
+              >
+                Cadastre-se
+              </Button>
+            </Block>
           </Block>
         </Block>
       </Block>
@@ -87,7 +137,7 @@ const styles = StyleSheet.create({
     marginTop: '-50%'
   },
   title: {
-    marginTop:'-5%'
+    marginTop: '-5%'
   },
   subTitle: {
     marginTop: 20

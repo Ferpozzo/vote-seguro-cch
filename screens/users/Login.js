@@ -7,13 +7,53 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
-
+import axios from 'axios'
 import { Button, Icon, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
+import ValidationComponent from "react-native-form-validator";
+import { backendServer } from "../../constants/server";
+import * as SecureStore from 'expo-secure-store';
 
 const { width, height } = Dimensions.get("screen");
 
-class Login extends React.Component {
+class Login extends ValidationComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      error: null
+    };
+  }
+  _onSubmit() {
+    const { navigation } = this.props
+    this.validate({
+      email: { email: true, required: true },
+      password: { required: true }
+    });
+    if (this.isFormValid()) {
+      axios.post(backendServer.url + '/auth', this.state)
+        .then(response => {
+          SecureStore.setItemAsync('token', response.data.token).then(data => {
+            SecureStore.setItemAsync('email', this.state.email).then(data => {
+              navigation.navigate("App")
+            })
+          })
+        })
+        .catch(error => {
+          if (error.response) {
+            console.log('Erro 1 aqui ', error.response);
+            if (error.response.data.error) {
+              this.setState({ error: error.response.data.error })
+            }
+          } else if (error.request) {
+            console.log('Erro 2 ', error.request);
+          } else {
+            console.log('Erro 3', error)
+          }
+        });
+    }
+  }
   render() {
     const { navigation } = this.props;
     return (
@@ -40,7 +80,10 @@ class Login extends React.Component {
                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                       <Input
                         borderless
-                        placeholder="CPF"
+                        placeholder="Email"
+                        onChangeText={(text) => this.setState({
+                          email: text
+                        })}
                         iconContent={
                           <Icon
                             size={16}
@@ -52,11 +95,15 @@ class Login extends React.Component {
                         }
                       />
                     </Block>
+                    <Block key='email'>{this.isFieldInError('email') && this.getErrorsInField('email').map((errorMessage, index) => <Text key={index} color={argonTheme.COLORS.WARNING}>{errorMessage}</Text>)}</Block>
                     <Block width={width * 0.8}>
                       <Input
                         password
                         borderless
                         placeholder="Senha"
+                        onChangeText={(text) => this.setState({
+                          password: text
+                        })}
                         iconContent={
                           <Icon
                             size={16}
@@ -67,18 +114,11 @@ class Login extends React.Component {
                           />
                         }
                       />
-                      <Block row style={styles.passwordCheck}>
-                        <Text size={12} color={argonTheme.COLORS.MUTED}>
-                          Força da senha:
-                        </Text>
-                        <Text bold size={12} color={argonTheme.COLORS.SUCCESS}>
-                          {" "}
-                          forte
-                        </Text>
-                      </Block>
                     </Block>
+                    <Block key='password'>{this.isFieldInError('password') && this.getErrorsInField('password').map((errorMessage, index) => <Text key={index} color={argonTheme.COLORS.WARNING}>{errorMessage}</Text>)}</Block>
+                    <Block key='error'>{this.state.error && (<Text key={this.state.error} color={argonTheme.COLORS.WARNING}>{this.state.error}</Text>)}</Block>
                     <Block middle>
-                      <Button color="primary" style={styles.createButton} onPress={() => navigation.navigate("App")}>
+                      <Button color="primary" style={styles.createButton} onPress={() => this._onSubmit()}>
                         <Text bold size={14} color={argonTheme.COLORS.WHITE}>
                           ENTRAR
                         </Text>

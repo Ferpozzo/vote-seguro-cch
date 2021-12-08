@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, Linking } from "react-native";
 import { Block, Text, theme } from "galio-framework";
+import * as SecureStore from 'expo-secure-store';
 
 import Icon from "./Icon";
 import argonTheme from "../constants/Theme";
@@ -69,10 +70,15 @@ class DrawerItem extends React.Component {
           name="spaceship"
           family="ArgonExtra"
           size={14}
-          color={focused ? "white" : "rgba(0,0,0,0.5)"}
+          color={"white"}
         />);
-      case "Log out":
-        return <Icon />;
+      case "Sair":
+        return (<Icon
+          name="logout"
+          family="AntDesign"
+          size={14}
+          color={"white"}
+        />);
       default:
         return null;
     }
@@ -94,7 +100,11 @@ class DrawerItem extends React.Component {
             ? Linking.openURL(
               "https://github.com/Ferpozzo/vote-seguro"
             ).catch(err => console.error("An error occurred", err))
-            : navigation.navigate(title)
+            : title == "Sair" ? SecureStore.deleteItemAsync("token").then(d => {
+              SecureStore.deleteItemAsync("email").then(e => {
+                navigation.navigate("Onboarding")
+              })
+            }) : navigation.navigate(title)
         }
       >
         <Block flex row style={containerStyles}>
@@ -105,7 +115,7 @@ class DrawerItem extends React.Component {
             <Text
               size={15}
               bold={focused ? true : false}
-              color={focused ? "white" : "rgba(0,0,0,0.5)"}
+              color={focused || (title == "Começando no App" || title == "Sair") ? "white" : "rgba(0,0,0,0.5)"}
             >
               {title}
             </Text>

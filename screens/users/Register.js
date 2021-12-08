@@ -1,19 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ScrollView
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
-
+import ValidationComponent from 'react-native-form-validator';
+import axios from 'axios'
+import { backendServer } from '../../constants/server'
 import { Button, Icon, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
-
+import * as SecureStore from 'expo-secure-store';
 const { width, height } = Dimensions.get("screen");
-
-class Register extends React.Component {
+const messages = {
+  pt: {
+    numbers: "Erro nos números",
+    required: "Este campo é obrigatório",
+    minlength: "Tamanho mínimo é",
+    maxLength: "Tamanho máximo é"
+  }
+};
+class Register extends ValidationComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    };
+  }
+  _onSubmit() {
+    const { navigation } = this.props
+    this.validate({
+      name: { minlength: 3, maxlength: 100, required: true },
+      email: { email: true, required: true },
+      password: { minlength: 8, required: true },
+      confirmPassword: { required: true, equalPassword: this.state.password }
+    });
+    if (this.isFormValid()) {
+      axios.post(backendServer.url + '/users', this.state)
+        .then(response => {
+          SecureStore.setItemAsync('token', response.data.token).then(data => {
+            SecureStore.setItemAsync('email', this.state.email).then(data => {
+              navigation.navigate("App")
+            })
+          })
+        })
+        .catch(error => {
+          if (error.response) {
+            console.log('Erro 1 ', error.response);
+          } else if (error.request) {
+            console.log('Erro 2 ', error.request);
+          } else {
+            console.log('Erro 3', error)
+          }
+        });
+    }
+  }
   render() {
     const { navigation } = this.props
     return (
@@ -56,7 +103,8 @@ class Register extends React.Component {
                   </Button>
                 </Block>
               </Block>
-              <Block flex>
+              <Block flex><ScrollView
+                showsVerticalScrollIndicator={false}>
                 <Block flex={0.17} middle>
                   <Text color="#8898AA" size={12}>
                     Or sign up the classic way
@@ -71,7 +119,10 @@ class Register extends React.Component {
                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                       <Input
                         borderless
-                        placeholder="Name"
+                        placeholder="Nome"
+                        onChangeText={(text) => this.setState({
+                          name: text
+                        })}
                         iconContent={
                           <Icon
                             size={16}
@@ -83,10 +134,14 @@ class Register extends React.Component {
                         }
                       />
                     </Block>
+                    <Block key='name'>{this.isFieldInError('name') && this.getErrorsInField('name').map((errorMessage, index) => <Text key={index} color={argonTheme.COLORS.WARNING}>{errorMessage}</Text>)}</Block>
                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                       <Input
                         borderless
                         placeholder="Email"
+                        onChangeText={(text) => this.setState({
+                          email: text
+                        })}
                         iconContent={
                           <Icon
                             size={16}
@@ -98,11 +153,15 @@ class Register extends React.Component {
                         }
                       />
                     </Block>
+                    <Block key='email'>{this.isFieldInError('email') && this.getErrorsInField('email').map((errorMessage, index) => <Text key={index} color={argonTheme.COLORS.WARNING}>{errorMessage}</Text>)}</Block>
                     <Block width={width * 0.8}>
                       <Input
                         password
                         borderless
-                        placeholder="Password"
+                        placeholder="Senha"
+                        onChangeText={(text) => this.setState({
+                          password: text
+                        })}
                         iconContent={
                           <Icon
                             size={16}
@@ -113,13 +172,33 @@ class Register extends React.Component {
                           />
                         }
                       />
+                      <Block key='password'>{this.isFieldInError('password') && this.getErrorsInField('password').map((errorMessage, index) => <Text key={index} color={argonTheme.COLORS.WARNING}>{errorMessage}</Text>)}</Block>
+                      <Block width={width * 0.8}>
+                        <Input
+                          password
+                          borderless
+                          placeholder="Confirme a senha"
+                          onChangeText={(text) => this.setState({
+                            confirmPassword: text
+                          })}
+                          iconContent={
+                            <Icon
+                              size={16}
+                              color={argonTheme.COLORS.ICON}
+                              name="padlock-unlocked"
+                              family="ArgonExtra"
+                              style={styles.inputIcons}
+                            />
+                          }
+                        />
+                      </Block>
+                      <Block key='confirmPassword'>{this.isFieldInError('confirmPassword') && this.getErrorsInField('confirmPassword').map((errorMessage, index) => <Text key={index} color={argonTheme.COLORS.WARNING}>{errorMessage}</Text>)}</Block>
                       <Block row style={styles.passwordCheck}>
                         <Text size={12} color={argonTheme.COLORS.MUTED}>
                           Força da senha:
                         </Text>
-                        <Text bold size={12} color={argonTheme.COLORS.SUCCESS}>
-                          {" "}
-                          forte
+                        <Text bold size={12} color={this.state ? (this.state.password.length > 8 ? argonTheme.COLORS.SUCCESS : argonTheme.COLORS.WARNING) : argonTheme.COLORS.PRIMARY}>
+                          {this.state ? (this.state.password.length > 8 ? " forte" : " fraca") : ""}
                         </Text>
                       </Block>
                     </Block>
@@ -143,7 +222,7 @@ class Register extends React.Component {
                       </Button>
                     </Block>
                     <Block middle>
-                      <Button onPress={() => navigation.navigate("App")} color="primary" style={styles.createButton}>
+                      <Button onPress={() => this._onSubmit()} color="primary" style={styles.createButton}>
                         <Text bold size={14} color={argonTheme.COLORS.WHITE}>
                           CREATE ACCOUNT
                         </Text>
@@ -151,6 +230,7 @@ class Register extends React.Component {
                     </Block>
                   </KeyboardAvoidingView>
                 </Block>
+              </ScrollView>
               </Block>
             </Block>
           </Block>

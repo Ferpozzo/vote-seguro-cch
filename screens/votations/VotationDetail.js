@@ -11,7 +11,7 @@ class VotationDetail extends React.Component {
     const votation = this.props.route.params.votation
     const voted = this.props.route.params.voted
     if (voted) {
-      console.log(voted.confirmed, voted.candidate);
+      console.log(voted.confirmed);
     }
     let subElections = votation.subElections.map((v, i) => {
       let candidates = v.candidates.map((c, i) => {
@@ -21,7 +21,8 @@ class VotationDetail extends React.Component {
               onPress={() => navigation.navigate("Vote",
                 {
                   votation: v,
-                  candidate: c
+                  candidate: c,
+                  voted: voted
                 })}
             >
               <Card
@@ -32,7 +33,7 @@ class VotationDetail extends React.Component {
                 caption={c.group}
                 imageStyle={styles.cardImageRadius}
                 imageBlockStyle={{ padding: theme.SIZES.BASE / 2 }}
-                image={c.img}
+                image={c.image}
               />
             </TouchableOpacity>
           </Block>
@@ -41,14 +42,15 @@ class VotationDetail extends React.Component {
       return (
         <Block key={i} style={styles.votation} shadow card center space={'evenly'} >
           <Block style={styles.votationsDates}>
-            <Block center><Text p size={11}>Início: {v.startDate}</Text></Block>
-            <Block center><Text p size={11}>Fim: {v.endDate}</Text></Block>
+            <Block center><Text p size={11}>Início: {new Date(v.startDate).toLocaleDateString()} {new Date(v.startDate).toLocaleTimeString()}</Text></Block>
+            <Block center><Text p size={11}>Fim: {new Date(v.endDate).toLocaleDateString()} {new Date(v.endDate).toLocaleTimeString()}</Text></Block>
           </Block>
           <Block center><Text h6>{v.name}</Text></Block>
           <Block center><Text h7>Candidatos</Text></Block>
           <Block style={styles.votations}>
             {candidates}
           </Block>
+          {v.voted ? <Block center><Text color="red" h7>Você já votou</Text></Block> : <Block center><Text color="green" h7>Você ainda não votou</Text></Block>}
         </Block>
       )
     })
