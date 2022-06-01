@@ -12,21 +12,21 @@ function checkVotation(votation, navigation) {
     buttonLayout = (
       <Block style={styles.buttons}>
         <Button onPress={() => navigation.navigate('VotationDetail', { votation: votation })} style={styles.button} color='success'>Votar</Button>
-        <Button disabled onPress={() => navigation.navigate('VotationResults', { votation: votation })} style={styles.buttonDisabled} color='info'>Resultados</Button>
+        <Button  onPress={() => navigation.navigate('VotationResults', { votation: votation })} style={styles.buttonDisabled} color='info'>Resultados</Button>
       </Block>
     )
   } else if (new Date(votation.endDate) < new Date()) {
     buttonLayout = (
       <Block style={styles.buttons}>
-        <Button disabled onPress={() => navigation.navigate('VotationDetail', { votation: votation })} style={styles.buttonDisabled} color='success'>Votar</Button>
+        <Button  onPress={() => navigation.navigate('VotationDetail', { votation: votation })} style={styles.buttonDisabled} color='success'>Votar</Button>
         <Button onPress={() => navigation.navigate('VotationResults', { votation: votation })} style={styles.button} color='info'>Resultados</Button>
       </Block>
     )
   } else {
     buttonLayout = (
       <Block style={styles.buttons}>
-        <Button disabled onPress={() => navigation.navigate('VotationDetail', { votation: votation })} style={styles.buttonDisabled} color='success'>Votar</Button>
-        <Button disabled onPress={() => navigation.navigate('VotationResults', { votation: votation })} style={styles.button} color='info'>Resultados</Button>
+        <Button  onPress={() => navigation.navigate('VotationDetail', { votation: votation })} style={styles.buttonDisabled} color='success'>Votar</Button>
+        <Button  onPress={() => navigation.navigate('VotationResults', { votation: votation })} style={styles.button} color='info'>Resultados</Button>
       </Block>
     )
   }
